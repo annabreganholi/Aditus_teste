@@ -1,7 +1,16 @@
 package com.aditusbr.test.businessdays;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.stream.Stream;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 
 /**
  * O objetivo deste exercício é ser capaz de implementar um método que seja
@@ -27,6 +36,7 @@ public class BusinessDayCounter {
 	
 	public void main(String[] args){
 		//Chamar metodo count
+		
 	}
 	
 	//contador para cada dia 'util, nos dias inuteis, nao conta
@@ -35,6 +45,7 @@ public class BusinessDayCounter {
 	
 	public int count(Date date1, Date date2) {
 		
+		addHolidays();
 		// Sua implementação deve vir aqui
 			//For : cada dia at'e ultimo dia
 			//VerifyDate
@@ -45,7 +56,28 @@ public class BusinessDayCounter {
 	
 	public void addHolidays(){
 		//Roda esse metodo so quando o arraylist esta vazio
+		String fileName = "./resources/holidays.txt";
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String stringDate = new String();
+		//read file into stream, try-with-resources
+		try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
+			
+			stream.forEach(s ->{
+				try {
+					holidays.add(dateFormat.parse(s));
+				} catch (ParseException e) {
+					System.out.println("Parse error");
+					e.printStackTrace();
+				}
+				});
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		holidays.forEach(System.out::println);
 	}
+
 
 	public boolean verifyDay(Date date){
 		//Date weekend? FALSE
@@ -54,3 +86,6 @@ public class BusinessDayCounter {
 		return false;
 	}
 }
+/*
+
+*/
