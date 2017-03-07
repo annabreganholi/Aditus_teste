@@ -6,11 +6,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 
 /**
  * O objetivo deste exercício é ser capaz de implementar um método que seja
@@ -33,32 +33,29 @@ import java.time.format.DateTimeFormatter;
 public class BusinessDayCounter {
 
 	private ArrayList<Date> holidays = new ArrayList<>();
-	
-	public void main(String[] args){
-		//Chamar metodo count
-		
-	}
-	
-	//contador para cada dia 'util, nos dias inuteis, nao conta
-	//Verifica se 'e dia 'util/inutil vendo if sab/dom depois if arraylist contains
-	//Nao caindo em nenhum dos ifs, cont++
+	private Calendar calendar = Calendar.getInstance();
 	
 	public int count(Date date1, Date date2) {
-		
-		addHolidays();
 		// Sua implementação deve vir aqui
-			//For : cada dia at'e ultimo dia
-			//VerifyDate
-			//count
+		//For : cada dia at� ultimo dia
+		//VerifyDate
+		//count
+		if(holidays.isEmpty())	addHolidays();
+		int counter = 0;
 		
-		return 0;
+		while (getZeroTimeDate(date1).compareTo(getZeroTimeDate(date2)) < 0){
+			date1 = new Date(date1.getTime() + TimeUnit.DAYS.toMillis(1)); //Add a day
+			if (verifyDay(date1)) counter++;
+		}
+		
+		
+		return counter;
 	}
 	
 	public void addHolidays(){
 		//Roda esse metodo so quando o arraylist esta vazio
 		String fileName = "./resources/holidays.txt";
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		String stringDate = new String();
 		//read file into stream, try-with-resources
 		try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
 			
@@ -75,17 +72,35 @@ public class BusinessDayCounter {
 			e.printStackTrace();
 		}
 		
-		holidays.forEach(System.out::println);
 	}
 
 
 	public boolean verifyDay(Date date){
+		
+		calendar.setTime(date);
+		
+		if(holidays.contains(getZeroTimeDate(date)))return false;
+		else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || 
+				calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) return false;
+		else return true;
 		//Date weekend? FALSE
 		//Date Feriado? FALSE
 		//Date util? TRUE
-		return false;
+		//return false;
+	}
+	
+	public static Date getZeroTimeDate(Date date) {
+	    Date resetedDate = date;
+	    Calendar calendar = Calendar.getInstance();
+
+	    calendar.setTime( date );
+	    calendar.set(Calendar.HOUR_OF_DAY, 0);
+	    calendar.set(Calendar.MINUTE, 0);
+	    calendar.set(Calendar.SECOND, 0);
+	    calendar.set(Calendar.MILLISECOND, 0);
+
+	    resetedDate = calendar.getTime();
+
+	    return resetedDate;
 	}
 }
-/*
-
-*/
