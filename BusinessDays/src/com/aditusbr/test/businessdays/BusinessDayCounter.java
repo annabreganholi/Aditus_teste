@@ -48,7 +48,6 @@ public class BusinessDayCounter {
 			if (verifyDay(date1)) counter++;
 		}
 		
-		
 		return counter;
 	}
 	

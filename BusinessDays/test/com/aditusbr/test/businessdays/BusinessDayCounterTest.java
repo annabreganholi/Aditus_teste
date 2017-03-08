@@ -47,6 +47,7 @@ public class BusinessDayCounterTest {
 
 		assertEquals(5, counter.count(date1, date2));
 	}
+	
 	@Test
 	public void testCarnivalWeek() {
 		calendar.set(2017, Calendar.FEBRUARY, 26);

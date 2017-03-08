@@ -14,8 +14,36 @@ package com.aditusbr.test.sort;
 public class Sort {
 
 	public void sort(int[] array) {
-		//Escolher m'etodo de ordena'cao e implementar
+		//CombSort
 		// Sua implementação deve vir aqui
+		int gap = array.length-1;
+		double shrink = 1.3;
+		boolean sorted = false;
+		int aux;
+		
+		while (!sorted){
+			
+			gap = (int) Math.floor(gap/shrink);
+			
+			if (gap > 1) sorted = false;
+			else {
+				gap = 1;
+				sorted = true;
+			}
+			
+			int i = 0;
+			
+			while ((i+gap) < array.length-1){
+				if (array[i] > array[i+gap]){
+					aux = array[i];
+					array[i] = array[i+gap];
+					array[i+gap] = aux;
+					sorted = false;
+				}
+				
+				i++;
+			}
+		} 
 	}
 
 }
