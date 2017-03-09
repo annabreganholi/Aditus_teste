@@ -1,6 +1,17 @@
 package com.aditusbr.test.interestrate;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * O objetivo deste exercício é conhecer um pouco como são calculados valores de
@@ -28,16 +39,46 @@ import java.util.Date;
  * alguma faça modificações na classe de testes.
  */
 public class InterestRateCalculator {
-
+	
+	private int year = 252;
+	private Map<Date, Double> cdi = new HashMap<>();
+	
 	public double getPeriodRate(double anualRate, int days) {
-		// Sua implementação deve vir aqui
-
-		return 0;
+		double periodInterest = 0.0;
+		double period = (double) days/this.year;
+		
+		periodInterest = Math.pow(( 1 + anualRate), period) - 1;
+		
+		return periodInterest;
 	}
 
 	public double getPeriodRate(Date date1, Date date2) {
 		// Sua implementação deve vir aqui
+		if(cdi.isEmpty())	addCdi();
+		
 
 		return 0;
+	}
+	
+	public void addCdi(){
+		//Roda esse metodo so quando o mapa esta vazio
+		String fileName = "./resources/cdi.txt";
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		
+		try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
+			
+			stream.forEach(s ->{
+				try {
+					cdi.put(dateFormat.parse(s.split(";")[0]), Double.parseDouble(s.split(";")[1]));
+				} catch (ParseException e) {
+					System.out.println("Parse error");
+					e.printStackTrace();
+				}
+			});
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+				
 	}
 }

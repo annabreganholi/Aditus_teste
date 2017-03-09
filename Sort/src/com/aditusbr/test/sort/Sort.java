@@ -14,7 +14,7 @@ package com.aditusbr.test.sort;
 public class Sort {
 
 	public void sort(int[] array) {
-		//CombSort
+		//CombSort (Melhor: nlogn Média:n^2 Pior:n^2 Memória:1 Estável:Sim)
 		// Sua implementaÃ§Ã£o deve vir aqui
 		int gap = array.length-1;
 		double shrink = 1.3;

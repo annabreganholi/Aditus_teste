@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -35,6 +34,12 @@ public class BusinessDayCounter {
 	private ArrayList<Date> holidays = new ArrayList<>();
 	private Calendar calendar = Calendar.getInstance();
 	
+	/**
+	 * 
+	 * @param date1
+	 * @param date2
+	 * @return
+	 */
 	public int count(Date date1, Date date2) {
 		// Sua implementação deve vir aqui
 		//For : cada dia at� ultimo dia
@@ -43,8 +48,11 @@ public class BusinessDayCounter {
 		if(holidays.isEmpty())	addHolidays();
 		int counter = 0;
 		
-		while (getZeroTimeDate(date1).compareTo(getZeroTimeDate(date2)) < 0){
-			date1 = new Date(date1.getTime() + TimeUnit.DAYS.toMillis(1)); //Add a day
+		while (date1.compareTo(date2) < 0){
+			calendar.setTime(date1);
+			calendar.add(Calendar.DAY_OF_MONTH, 1);
+			date1 = calendar.getTime();
+			//new Date(date1.getTime() + TimeUnit.DAYS.toMillis(1)); //Add a day
 			if (verifyDay(date1)) counter++;
 		}
 		
@@ -65,7 +73,7 @@ public class BusinessDayCounter {
 					System.out.println("Parse error");
 					e.printStackTrace();
 				}
-				});
+			});
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -78,10 +86,13 @@ public class BusinessDayCounter {
 		
 		calendar.setTime(date);
 		
-		if(holidays.contains(getZeroTimeDate(date)))return false;
+		if(holidays.contains(getZeroTimeDate(date)))
+			return false;
 		else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || 
-				calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) return false;
-		else return true;
+				calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) 
+			return false;
+		else 
+			return true;
 		//Date weekend? FALSE
 		//Date Feriado? FALSE
 		//Date util? TRUE
@@ -97,7 +108,8 @@ public class BusinessDayCounter {
 	    calendar.set(Calendar.MINUTE, 0);
 	    calendar.set(Calendar.SECOND, 0);
 	    calendar.set(Calendar.MILLISECOND, 0);
-
+	    
+	    
 	    resetedDate = calendar.getTime();
 
 	    return resetedDate;
