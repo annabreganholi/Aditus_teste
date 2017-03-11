@@ -7,6 +7,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +43,7 @@ public class InterestRateCalculator {
 	
 	private int year = 252;
 	private Map<Date, Double> cdi = new HashMap<>();
+	private Calendar calendar = Calendar.getInstance();
 	
 	public double getPeriodRate(double anualRate, int days) {
 		double periodInterest = 0.0;
@@ -54,10 +56,39 @@ public class InterestRateCalculator {
 
 	public double getPeriodRate(Date date1, Date date2) {
 		// Sua implementação deve vir aqui
-		if(cdi.isEmpty())	addCdi();
+		Double interest = 0.0;
+		Double periodInterest = 0.0;
+		
+		if(cdi.isEmpty()){
+			addCdi();
+		}
+		
+		
+		while (date1.compareTo(date2) < 0){
+						
+			if (cdi.containsKey(getZeroTimeDate(date1))){
+				interest = getPeriodRate(cdi.get(getZeroTimeDate(date1))/100, 1);
+				
+				
+				if (periodInterest == 0.0){
+					
+					periodInterest = 1 + interest ;
+					
+				} else {
+					
+				periodInterest = periodInterest * (1 + interest);
+								
+				}
+			}
+			
+			calendar.setTime(date1);
+			calendar.add(Calendar.DAY_OF_MONTH, 1);
+			date1 = calendar.getTime();
+			
+		}
 		
 
-		return 0;
+		return periodInterest -1;
 	}
 	
 	public void addCdi(){
@@ -81,4 +112,21 @@ public class InterestRateCalculator {
 		}
 				
 	}
+	
+	public static Date getZeroTimeDate(Date date) {
+	    Date resetedDate = date;
+	    Calendar calendar = Calendar.getInstance();
+
+	    calendar.setTime( date );
+	    calendar.set(Calendar.HOUR_OF_DAY, 0);
+	    calendar.set(Calendar.MINUTE, 0);
+	    calendar.set(Calendar.SECOND, 0);
+	    calendar.set(Calendar.MILLISECOND, 0);
+	    
+	    
+	    resetedDate = calendar.getTime();
+
+	    return resetedDate;
+	}
+	
 }
