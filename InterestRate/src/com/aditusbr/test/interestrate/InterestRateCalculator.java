@@ -6,12 +6,10 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -39,82 +37,102 @@ import java.util.stream.Stream;
  * achar que isso pode ajudar/simplificar sua implementaÃ§Ã£o, mas em hipÃ³tese
  * alguma faÃ§a modificaÃ§Ãµes na classe de testes.
  */
+
+
 public class InterestRateCalculator {
 	
 	private int year = 252;
 	private Map<Date, Double> cdi = new HashMap<>();
 	private Calendar calendar = Calendar.getInstance();
 	
+	/**
+	 * Método de implementação principal para o primeiro teste
+	 * É usado a fórmula (1 + taxaAnual ) ^ (diasDoPeríodo/diasÚteisAno) - 1;
+	 * O método retorna o valor do juros equivalente à aquele período.
+	 * @param anualRate
+	 * @param days
+	 * @return
+	 */
 	public double getPeriodRate(double anualRate, int days) {
-		double periodInterest = 0.0;
+		
 		double period = (double) days/this.year;
+		return Math.pow(( 1 + anualRate), period) - 1;
 		
-		periodInterest = Math.pow(( 1 + anualRate), period) - 1;
-		
-		return periodInterest;
 	}
-
+	/**
+	 * Método de Implementação principal do segundo teste
+	 * Dado um período de dias, ele retorna o juros acumulado do período de dias.
+	 * 
+	 * @param date1
+	 * @param date2
+	 * @return
+	 */
 	public double getPeriodRate(Date date1, Date date2) {
-		// Sua implementaÃ§Ã£o deve vir aqui
 		Double interest = 0.0;
 		Double periodInterest = 0.0;
 		
-		if(cdi.isEmpty()){
+		if(this.cdi.isEmpty())	{ //Adiciona as datas + taxasJuros em um mapa. Apenas se o mapa está vazio.
 			addCdi();
 		}
 		
-		
-		while (date1.compareTo(date2) < 0){
+		while (date1.compareTo(date2) < 0) {
 						
-			if (cdi.containsKey(getZeroTimeDate(date1))){
-				interest = getPeriodRate(cdi.get(getZeroTimeDate(date1))/100, 1);
-				
+			if (this.cdi.containsKey(getZeroTimeDate(date1))) {
+				interest = getPeriodRate(this.cdi.get(getZeroTimeDate(date1))/100, 1);
 				
 				if (periodInterest == 0.0){
-					
 					periodInterest = 1 + interest ;
-					
-				} else {
-					
-				periodInterest = periodInterest * (1 + interest);
-								
+				} 
+				else {
+					periodInterest = periodInterest * (1 + interest);
 				}
 			}
-			
-			calendar.setTime(date1);
-			calendar.add(Calendar.DAY_OF_MONTH, 1);
-			date1 = calendar.getTime();
-			
+			//Incrementa um dia
+			this.calendar.setTime(date1);
+			this.calendar.add(Calendar.DAY_OF_MONTH, 1);
+			date1 = this.calendar.getTime();
 		}
 		
-
 		return periodInterest -1;
 	}
 	
-	public void addCdi(){
+	/**
+	 * Método que faz a leitura e inserção dos dados do arquivo "cdi.txt"
+	 * e os insere no mapa "cdi"
+	 */
+	public void addCdi()
+	{
 		//Roda esse metodo so quando o mapa esta vazio
 		String fileName = "./resources/cdi.txt";
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
-		try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
-			
-			stream.forEach(s ->{
+		try (Stream<String> stream = Files.lines(Paths.get(fileName))){			
+			stream.forEach(s -> 
+			{
 				try {
-					cdi.put(dateFormat.parse(s.split(";")[0]), Double.parseDouble(s.split(";")[1]));
-				} catch (ParseException e) {
+					this.cdi.put(dateFormat.parse(s.split(";")[0]), Double.parseDouble(s.split(";")[1]));
+				} 
+				catch (ParseException e){
 					System.out.println("Parse error");
 					e.printStackTrace();
 				}
 			});
-			
-		} catch (IOException e) {
+		} 
+		catch (IOException e){
 			e.printStackTrace();
-		}
-				
+		}		
 	}
 	
-	public static Date getZeroTimeDate(Date date) {
-	    Date resetedDate = date;
+	/**
+	 * Este método faz o "reset" do horário, para que seja possível comparar
+	 * os dois objetos Date futuramente
+	 * O método recebe a data, e retorna a data com seus valores de 
+	 * hora, minuto, segundos e milisegundos resetados para zero
+	 * @param date
+	 * @return
+	 */
+	public static Date getZeroTimeDate(Date date){
+		
 	    Calendar calendar = Calendar.getInstance();
 
 	    calendar.setTime( date );
@@ -122,11 +140,8 @@ public class InterestRateCalculator {
 	    calendar.set(Calendar.MINUTE, 0);
 	    calendar.set(Calendar.SECOND, 0);
 	    calendar.set(Calendar.MILLISECOND, 0);
-	    
-	    
-	    resetedDate = calendar.getTime();
 
-	    return resetedDate;
+	    return calendar.getTime();
 	}
 	
 }

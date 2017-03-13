@@ -35,72 +35,90 @@ public class BusinessDayCounter {
 	private Calendar calendar = Calendar.getInstance();
 	
 	/**
-	 * 
+	 * Método de implementação principal do teste
+	 * Recebe como parâmetros duas datas
+	 * Verifica quais dos dias são úteis, e faz a contagem destes.
+	 * O método inclui o último dia do período, e exclui o primeiro.
 	 * @param date1
 	 * @param date2
 	 * @return
 	 */
 	public int count(Date date1, Date date2) {
-		// Sua implementaÃ§Ã£o deve vir aqui
-		//For : cada dia até ultimo dia
-		//VerifyDate
-		//count
-		if(holidays.isEmpty())	addHolidays();
+
+		if(this.holidays.isEmpty())	addHolidays();
 		int counter = 0;
+		Date aux = date1;
 		
-		while (date1.compareTo(date2) < 0){
-			calendar.setTime(date1);
-			calendar.add(Calendar.DAY_OF_MONTH, 1);
-			date1 = calendar.getTime();
-			//new Date(date1.getTime() + TimeUnit.DAYS.toMillis(1)); //Add a day
-			if (verifyDay(date1)) counter++;
+		while (aux.compareTo(date2) < 0) {	
+			//Dia ++;
+			this.calendar.setTime(aux);
+			this.calendar.add(Calendar.DAY_OF_MONTH, 1);
+			aux = this.calendar.getTime();
+			//Verifica se é dia útil:
+			if (verifyDay(aux)) {
+				counter++;
+			}
 		}
 		
 		return counter;
 	}
 	
-	public void addHolidays(){
-		//Roda esse metodo so quando o arraylist esta vazio
+	/**
+	 * Método que faz a leitura e inserção dos dados do arquivo "holidays.txt"
+	 * e os insere no arraylist "holidays"
+	 */
+	public void addHolidays() {
+		
 		String fileName = "./resources/holidays.txt";
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		//read file into stream, try-with-resources
+		
 		try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
-			
-			stream.forEach(s ->{
+			stream.forEach(s ->
+			{
 				try {
 					holidays.add(dateFormat.parse(s));
-				} catch (ParseException e) {
+				} 
+				catch (ParseException e) {
 					System.out.println("Parse error");
 					e.printStackTrace();
 				}
 			});
-			
-		} catch (IOException e) {
+		} 
+		catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 	}
 
-
-	public boolean verifyDay(Date date){
-		
-		calendar.setTime(date);
-		
-		if(holidays.contains(getZeroTimeDate(date)))
+	/**
+	 * Este método faz a conferência se uma data caiu(cai) em um dia útil
+	 * Ele recebe como parâmetro a data, e retorna true, se for dia útil e false caso contrário
+	 * @param date
+	 * @return
+	 */
+	public boolean verifyDay(Date date)
+	{
+		this.calendar.setTime(date);
+		if(this.holidays.contains(getZeroTimeDate(date))) {
 			return false;
-		else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || 
-				calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) 
+		}
+		else if (this.calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || 
+				this.calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
 			return false;
-		else 
+		}
+		else {
 			return true;
-		//Date weekend? FALSE
-		//Date Feriado? FALSE
-		//Date util? TRUE
-		//return false;
+		}
 	}
 	
+	/**
+	 * Este método faz o "reset" do horário, para que seja possível comparar
+	 * os dois objetos Date futuramente
+	 * O método recebe a data, e retorna a data com seus valores de 
+	 * hora, minuto, segundos e milisegundos resetados para zero
+	 * @param date
+	 * @return
+	 */	
 	public static Date getZeroTimeDate(Date date) {
-	    Date resetedDate = date;
 	    Calendar calendar = Calendar.getInstance();
 
 	    calendar.setTime( date );
@@ -108,10 +126,7 @@ public class BusinessDayCounter {
 	    calendar.set(Calendar.MINUTE, 0);
 	    calendar.set(Calendar.SECOND, 0);
 	    calendar.set(Calendar.MILLISECOND, 0);
-	    
-	    
-	    resetedDate = calendar.getTime();
 
-	    return resetedDate;
+	    return calendar.getTime();
 	}
 }
